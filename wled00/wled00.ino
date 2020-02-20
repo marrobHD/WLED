@@ -80,6 +80,15 @@
 #include "ir_codes.h"
 #include "const.h"
 
+//Intiating code for TechLED Dig-Uno temp sensor
+//Uncomment Celsius if that is your prefered temperature scale
+#include <DallasTemperature.h>
+OneWire oneWire(12); 
+DallasTemperature sensors(&oneWire);
+long temptimer = millis();
+long lastMeasure = 0;
+#define Celsius
+
 
 #if IR_PIN < 0
  #ifndef WLED_DISABLE_INFRARED
