@@ -1,21 +1,24 @@
+#include <Arduino.h>
 #include "wled.h"
-/*
- * This v1 usermod file allows you to add own functionality to WLED more easily
- * See: https://github.com/Aircoookie/WLED/wiki/Add-own-functionality
- * EEPROM bytes 2750+ are reserved for your custom use case. (if you extend #define EEPSIZE in const.h)
- * If you just need 8 bytes, use 2551-2559 (you do not need to increase EEPSIZE)
- * 
- * Consider the v2 usermod API if you need a more advanced feature set!
- */
+//Intiating code for QuinLED Dig-Uno temp sensor
+//Uncomment Celsius if that is your prefered temperature scale
+#include <DallasTemperature.h> //Dallastemperature sensor
+#ifdef ARDUINO_ARCH_ESP32 //ESP32 boards
+OneWire oneWire(18);
+#else //ESP8266 boards
+OneWire oneWire(14);
+#endif
+DallasTemperature sensor(&oneWire);
+long temptimer = millis();
+long lastMeasure = 0;
+#define Celsius // Show temperature mesaurement in Celcius otherwise is in Fahrenheit
 
-//Use userVar0 and userVar1 (API calls &U0=,&U1=, uint16_t)
-
-//gets called once at boot. Do all initialization that doesn't depend on network here
 void userSetup()
 {
-  
+  // Start the DS18B20 sensor
+  sensor.begin();
 }
-
+    
 //gets called every time WiFi is (re-)connected. Initialize own network interfaces here
 void userConnected()
 {
@@ -25,5 +28,43 @@ void userConnected()
 //loop. You can use "if (WLED_CONNECTED)" to check for successful connection
 void userLoop()
 {
+  temptimer = millis();
   
+// Timer to publishe new temperature every 60 seconds
+  if (temptimer - lastMeasure > 60000) {
+    lastMeasure = temptimer;
+
+//Check for successful connection
+    if (WLED_CONNECTED){
+      sensor.requestTemperatures();
+
+//Gets prefered temperature scale based on selection in definitions section
+      #ifdef WLED_ENABLE_USERMODXML
+        #ifdef Celsius
+        usermodxml1 = sensor.getTempCByIndex(0);
+        #else
+        usermodxml1 = sensors.getTempFByIndex(0);
+        #endif
+      #endif
+    return;}
+
+//Check if MQTT Connected, otherwise it will crash the 8266
+    if (mqtt != nullptr){
+      sensor.requestTemperatures();
+
+//Gets prefered temperature scale based on selection in definitions section
+      #ifdef Celsius
+      float board_temperature = sensor.getTempCByIndex(0);
+      #else
+      float board_temperature = sensors.getTempFByIndex(0);
+      #endif
+
+//Create character string populated with user defined device topic from the UI, and the read temperature. Then publish to MQTT server.
+      char subuf[38];
+      strcpy(subuf, mqttDeviceTopic);
+      strcat(subuf, "/temperature");
+      mqtt->publish(subuf, 0, true, String(board_temperature).c_str());
+    return;}
+  return;}
+return;
 }
