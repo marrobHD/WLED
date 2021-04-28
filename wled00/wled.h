@@ -572,15 +572,6 @@ WLED_GLOBAL UsermodManager usermods _INIT(UsermodManager());
   WLED_GLOBAL byte usermodxml3_s _INIT(-1);
 #endif
 
-// Usermod XML
-#ifdef WLED_ENABLE_USERMODXML
-  WLED_GLOBAL byte usermodxml1 _INIT(-1);
-  WLED_GLOBAL byte usermodxml2 _INIT(-1);
-  WLED_GLOBAL byte usermodxml3 _INIT(-1);
-  WLED_GLOBAL byte usermodxml1_s _INIT(-1);
-  WLED_GLOBAL byte usermodxml2_s _INIT(-1);
-  WLED_GLOBAL byte usermodxml3_s _INIT(-1);
-#endif
 
 // Status LED
 #if STATUSLED
