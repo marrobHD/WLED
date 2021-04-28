@@ -8,7 +8,7 @@ XML API: I use it to report the board temp to Home Assistant via XML API, this i
 
 Home Assistant Community Posts:
 
-* [WLED custom Patterns with Home Assistant | Guide]()
+* [WLED custom Patterns with Home Assistant | Guide](https://community.home-assistant.io/t/wled-custom-patterns-with-home-assistant-guide/303558)
 
 
 This code uses Aircookie's WLED software. It has a premade file for user modifications. I use it to publish the temperature from the dallas temperature sensor on the Quinled board. The entries for the top of the WLED00 file, initializes the required libraries, and variables for the sensor. The .ino file waits for 60 seconds, and checks to see if the MQTT server is connected (thanks Aircoookie). It then poles the sensor, and published it using the MQTT service already running, using the main topic programmed in the WLED UI.
